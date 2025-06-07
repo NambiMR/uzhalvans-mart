@@ -10,7 +10,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Hero.css';
 import hero1 from '../assets/images/hero-1.jpg';
-import hero3 from '../assets/images/hero3.jpg';
+import hero3 from '../assets/images/hero-2.jpg';
 import organicImage from '../assets/images/organic.jpg';
 
 const Hero = () => {

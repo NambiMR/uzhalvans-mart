@@ -28,7 +28,9 @@ export const products = [
     price: 2.99,
     oldPrice: 3.49,
     farmer: "Raju Farms",
+    farmerId: "f1", 
     farmerAvatar: f1,
+    stock: 50,       
     category: "vegetables",
     description: "Grown naturally without pesticides, these tomatoes are juicy and full of flavor.",
     images: [
@@ -48,7 +50,9 @@ export const products = [
     price: 1.99,
     oldPrice: 2.29,
     farmer: "Dev Orchards",
+    farmerId: "f2", 
     farmerAvatar: f2,
+    stock: 50,
     category: "fruits",
     description: "Crisp and sweet apples handpicked from local orchards.",
     images: [
@@ -68,7 +72,9 @@ export const products = [
     price: 1.49,
     oldPrice: 1.79,
     farmer: "Anand Grains",
+    farmerId: "f3", 
     farmerAvatar: f3,
+    stock: 50,
     category: "grains",
     description: "Nutritious whole wheat grains milled fresh for your daily baking.",
     images: [

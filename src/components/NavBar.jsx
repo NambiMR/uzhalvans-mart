@@ -104,7 +104,6 @@ const Navbar = () => {
           >
             <li><Link to="/buyer-auth">Buyer Login</Link></li>
             <li><Link to="/seller-auth">Seller Login</Link></li>
-            <li><Link to="/register">Register</Link></li>
           </ul>
         </div>
       </div>

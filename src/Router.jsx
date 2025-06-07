@@ -16,6 +16,10 @@ import ContactPage from "./pages/ContactPage";
 import { farmerTestimonials, customerTestimonials } from './data/testimonials';
 import BuyerAuth from "./pages/BuyerAuth";
 import SellerAuth from "./pages/SellerAuth";
+import FarmerLayout from "./pages/farmer/FarmerLayout"
+import FarmerDashboard from "./pages/farmer/Dashboard";
+import FarmerProducts from "./pages/farmer/Products";
+
 
 function AppRouter() {
   return (
@@ -33,6 +37,13 @@ function AppRouter() {
         <Route path="/contact" element={<ContactPage/>}/>
         <Route path="/buyer-auth" element={<BuyerAuth />} />
         <Route path="/seller-auth" element={<SellerAuth />} />
+
+{/*         
+        <Route path="/farmer" element={<FarmerLayout />}>
+          <Route index element={<FarmerDashboard />} />
+          <Route path="products" element={<FarmerProducts />} />
+          <Route path="orders" element={<FarmerOrders />} /> */}
+        {/* </Route> */}
       </Routes>
       <Footer/>
     </>

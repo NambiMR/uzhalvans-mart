@@ -30,7 +30,7 @@ const CategoryCarousel = () => {
   };
 
   return (
-    <section className="py-12 bg-green-700">
+    <section className="py-12 bg-green-800">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-8 text-white">
           Shop by Category
