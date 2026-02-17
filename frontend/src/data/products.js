@@ -31,13 +31,15 @@ export const products = [
     farmerId: "f1", 
     farmerAvatar: f1,
     stock: 50,       
+    isSeasonal: true, // Add this for seasonal products
+    sales: 125,       // Add this for best sellers
     category: "vegetables",
     description: "Grown naturally without pesticides, these tomatoes are juicy and full of flavor.",
     images: [
       veg,
       fruit
     ],
-    rating: 4.5,
+    rating: 2.5,
     reviewCount: 42,
     specs: {
       weight: "1kg",
@@ -53,6 +55,8 @@ export const products = [
     farmerId: "f2", 
     farmerAvatar: f2,
     stock: 50,
+    isSeasonal: true, // Add this for seasonal products
+    sales: 135,       // Add this for best sellers
     category: "fruits",
     description: "Crisp and sweet apples handpicked from local orchards.",
     images: [
@@ -75,6 +79,8 @@ export const products = [
     farmerId: "f3", 
     farmerAvatar: f3,
     stock: 50,
+    isSeasonal: false, // Add this for seasonal products
+    sales: 95,       // Add this for best sellers
     category: "grains",
     description: "Nutritious whole wheat grains milled fresh for your daily baking.",
     images: [
@@ -141,7 +147,7 @@ export const products = [
       fruit,
       veg
     ],
-    rating: 4.6,
+    rating: 3.6,
     reviewCount: 38,
     specs: {
       weight: "100g",
@@ -221,7 +227,7 @@ export const products = [
       veg,
     spices
     ],
-    rating: 4.5,
+    rating: 2.5,
     reviewCount: 34,
     specs: {
       weight: "250g",
@@ -241,7 +247,7 @@ export const products = [
       pulses,
       flowers
     ],
-    rating: 4.5,
+    rating: 5,
     reviewCount: 35,
     specs: {
       weight: "1kg",

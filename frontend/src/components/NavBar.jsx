@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { FaSearch, FaHome, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import { GrLanguage } from "react-icons/gr";
 import { IoMdArrowDropdown } from "react-icons/io";
 import logo from "../assets/images/logo1.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import SearchBar from './SearchBar';
 
 // Reusable NavItem component
 const NavItem = ({ to, children, icon, onClick, className = "" }) => (
   <li>
-    <NavLink 
+    <NavLink
       to={to}
       onClick={onClick}
-      className={({ isActive }) => 
-        `hover:text-green-500 transition-colors ${className} ${
-          isActive ? "text-green-600 font-semibold" : ""
+      className={({ isActive }) =>
+        `hover:text-green-500 transition-colors ${className} ${isActive ? "text-green-600 font-semibold" : ""
         }`
       }
       end={to === "/"}
@@ -28,14 +28,16 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+  // 1. Get user info from localStorage
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const searchTerm = e.target.search.value;
-    if (searchTerm.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
-    }
+  // 2. Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('userInfo');
+    navigate('/');
+    window.location.reload(); // Quick refresh to update UI state
   };
 
   // Navigation items config
@@ -68,42 +70,32 @@ const Navbar = () => {
           </ul>
         </div>
 
-        {/* Search Section */}
-        <form onSubmit={handleSearch} className="flex flex-grow max-w-2xl mx-4">
-          <select 
-            className="select select-md rounded-l-sm bg-gray-300 text-black border-r-0 focus:outline-none"
-            name="category"
-          >
-            <option value="all">All Categories</option>
-            <option value="vegetables">Vegetables</option>
-            <option value="fruits">Fruits</option>
-            <option value="grains">Grains</option>
-          </select>
-          <input
-            type="text"
-            name="search"
-            placeholder="Search Product"
-            className="input input-md w-full rounded-none border-x-0 bg-white text-black focus:outline-none"
-          />
-          <button 
-            type="submit"
-            className="btn btn-md btn-square bg-green-400 text-white rounded-r-md border-l-0 focus:outline-none"
-          >
-            <FaSearch />
-          </button>
-        </form>
+        <SearchBar />
 
-        {/* Login/Register Dropdown */}
-        <div className="dropdown dropdown-hover">
-          <label tabIndex={0} className="btn btn-sm btn-ghost text-white gap-2">
-            <FaUser className="text-xl" /> Login / Registration
+        {/* Dynamic Login/User Dropdown */}
+        <div className="dropdown dropdown-hover dropdown-end">
+          <label tabIndex={0} className="btn btn-sm btn-ghost text-white gap-2 capitalize">
+            <FaUser className="text-xl" />
+            {userInfo ? `Hi, ${userInfo.name.split(' ')[0]}` : 'Login / Registration'}
           </label>
           <ul
             tabIndex={0}
-            className="dropdown-content z-[1] menu p-2 shadow bg-white text-black rounded-box w-40 animate-fade-in"
+            className="dropdown-content z-[1] menu p-2 shadow bg-white text-black rounded-box w-60 animate-fade-in"
           >
-            <li><Link to="/buyer-auth">Buyer Login</Link></li>
-            <li><Link to="/seller-auth">Seller Login</Link></li>
+            {userInfo ? (
+              <>
+                <li className="px-4 py-2 font-bold border-b border-gray-100">Role: {userInfo.role}</li>
+                {userInfo.role === 'farmer' && (
+                  <li><Link to="/seller-dashboard">My Dashboard</Link></li>
+                )}
+                <li><button onClick={handleLogout} className="text-red-600">Logout</button></li>
+              </>
+            ) : (
+              <>
+                <li><Link to="/buyer-auth">Buyer Register/Login</Link></li>
+                <li><Link to="/seller-auth">Seller Register/Login</Link></li>
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -120,9 +112,9 @@ const Navbar = () => {
         <div className="hidden lg:flex flex-none mr-5">
           <ul className="menu menu-horizontal text-black text-lg gap-4">
             {navItems.map((item) => (
-              <NavItem 
-                key={item.to} 
-                to={item.to} 
+              <NavItem
+                key={item.to}
+                to={item.to}
                 icon={item.icon}
                 className="text-lg"
               >
@@ -141,21 +133,19 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Sidebar Menu */}
-      <div className={`fixed top-0 right-0 h-full w-full lg:w-[300px] bg-white bg-opacity-90 backdrop-blur-md shadow-lg transform ${
-        menuOpen ? "translate-x-0" : "translate-x-full"
-      } transition-transform duration-500 ease-in-out z-50 lg:hidden`}>
+      <div className={`fixed top-0 right-0 h-full w-full lg:w-[300px] bg-white bg-opacity-90 backdrop-blur-md shadow-lg transform ${menuOpen ? "translate-x-0" : "translate-x-full"
+        } transition-transform duration-500 ease-in-out z-50 lg:hidden`}>
         <div className="flex justify-end p-4">
           <button onClick={toggleMenu} className="text-3xl text-green-700">
             <FaTimes />
           </button>
         </div>
-        
+
         <ul className="flex flex-col p-4 text-black text-lg gap-4">
           {navItems.map((item) => (
-            <NavItem 
-              key={item.to} 
-              to={item.to} 
-              icon={item.icon}
+            <NavItem
+              key={item.to}
+              to={item.to}
               onClick={toggleMenu}
               className="block py-2"
             >

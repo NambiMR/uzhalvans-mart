@@ -1,5 +1,5 @@
 // src/pages/About.jsx
-import { useState } from 'react';
+
 import { motion } from 'framer-motion';
 import about from '../assets/images/aboutus.jpg';
 import founder1 from '../assets/images/customers/c6.jpg';
@@ -7,26 +7,7 @@ import founder2 from '../assets/images/customers/c4.jpg';
 import founder3 from '../assets/images/customers/c3.jpg';
 
 const About = () => {
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Thanks for your message, ${formData.name}! We'll contact you soon.`);
-    setFormData({ name: '', email: '', message: '' });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   return (
     <div className="bg-gray-50 text-green-700">
@@ -203,7 +184,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Contact Form Section */}
+      {/* Contact Form Section
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
           <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">Get in Touch</h2>
@@ -267,7 +248,7 @@ const About = () => {
             <p className="mt-1">+91 98765 43210</p>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

@@ -47,12 +47,13 @@ This document tracks our collective ideas, UI/UX improvements, and technical pla
 
 ---
 
-## 🚀 MERN Stack Transition (Phase 2)
-
-- [x] **Backend Setup**: Initialize Node.js/Express server. (Complete ✅)
+## 🔐 Phase 2.1: Authentication (Complete ✅)
+- **Status**: Backend & Frontend fully integrated.
+- **Next**: Vertical Slice 2 - Farmer Product Management.
 - [x] **Database**: Design MongoDB schemas and connect via Atlas. (Complete ✅)
-- [ ] **Authentication (Vertical Slice 1)**: Farmer & Buyer Login/Signup API + UI connection.
-- [ ] **Farmer Dashboard (Vertical Slice 2)**: Product Upload, Pricing, and Discount management.
+- [x] **Authentication (Vertical Slice 1)**: Farmer & Buyer Login/Signup API + UI connection. (Complete ✅)
+- [ ] **Farmer Dashboard (Vertical Slice 2)**: Product Upload (Cloudinary), Pricing, and Inventory. (Tomorrow's Priority)
+- [ ] **Global State**: Transition to React Context for Auth & Cart management.
 - [ ] **Payment Integration (Final Phase)**: Implementing Stripe/Razorpay for a complete learning experience.
 
 ---

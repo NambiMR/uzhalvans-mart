@@ -62,11 +62,11 @@ const ContactPage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="bg-gray-50 min-h-screen py-12 text-green-600"
+      className="bg-gray-200 min-h-screen py-12 text-green-600"
     >
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-4 text-green-700">Contact Us</h1>
-        <p className="text-lg text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-1 text-green-700">Contact Us</h1>
+        <p className="text-lg text-center text-gray-600 mb-6 max-w-2xl mx-auto">
           Have questions or feedback? We'd love to hear from you!
         </p>
 

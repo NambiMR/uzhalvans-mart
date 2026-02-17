@@ -1,6 +1,3 @@
-
-
-// components/Hero.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,7 +7,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Hero.css';
 import hero1 from '../assets/images/hero-1.jpg';
-import hero3 from '../assets/images/hero-2.jpg';
+import hero3 from '../assets/images/hero3.jpg';
 import organicImage from '../assets/images/organic.jpg';
 
 const Hero = () => {
@@ -47,14 +44,14 @@ const Hero = () => {
   }, [phrases.length]);
 
   return (
-    <section className="relative h-[500px] md:h-[630px] overflow-hidden">
+    <section className="relative h-[720px] md:10/11 overflow-hidden">
       {/* Image Slider */}
       <div className="absolute inset-0 z-0">
         <Slider {...settings}>
           {heroImages.map((item) => (
             <div key={item.id}>
               <div 
-                className="w-full h-[500px] md:h-[630px] bg-cover bg-center"
+                className="w-full h-[720px]  bg-cover bg-center"
                 style={{ backgroundImage: `url(${item.image})` }}
                 aria-label={item.alt}
               />
@@ -87,7 +84,7 @@ const Hero = () => {
           </p>
 
           {/* Reused Search Bar */}
-          <div className="mb-8 max-w-md mx-auto md:mx-0">
+          {/* <div className="mb-8 max-w-md mx-auto md:mx-0">
             <form className="flex">
               <input
                 type="text"
@@ -101,7 +98,7 @@ const Hero = () => {
                 <FaSearch className="text-xl" />
               </button>
             </form>
-          </div>
+          </div> */}
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
@@ -141,47 +138,4 @@ export default Hero;
 
 
 
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import 'swiper/css';
-// import 'swiper/css/autoplay';
-// import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-// import banner1 from "../assets/images/banner-1.png";
-// import banner2 from "../assets/images/banner-2.png";
-// import banner3 from "../assets/images/banner-3.png";
-// import banner4 from "../assets/images/sale.jpg";
 
-
-// const Carousel = () => {
-//   return (
-//     <Swiper
-//       modules={[Autoplay, Navigation, Pagination]}
-//       autoplay={{ delay: 5000, disableOnInteraction: false }}
-//       loop={true}
-//       pagination={{ clickable: true }}
-//       navigation
-//       className="w-full h-[350px] overflow-hidden"
-//     >
-//     <SwiperSlide>
-//   <img src={banner1} alt="Empowering Farmers" className="w-full h-full object-center" />
-// </SwiperSlide>
-
-// <SwiperSlide>
-//   <img src={banner2} alt="Trending Products" className="w-full h-full object-center" />
-// </SwiperSlide>
-
-// <SwiperSlide>
-//   <img src={banner3} alt="Trending Products" className="w-full h-full object-center" />
-// </SwiperSlide>
-// <SwiperSlide>
-//   <img src={banner4} alt="Trending Products" className="w-full h-full object-center" />
-// </SwiperSlide>
-
-// {/* <SwiperSlide>
-//   <img src="/path-to-your-banner/limited-time-offers.png" alt="Limited Time Offers" className="w-full h-auto object-cover" />
-// </SwiperSlide> */}
-
-//   </Swiper>
-//   );
-// };
-
-// export default Carousel;

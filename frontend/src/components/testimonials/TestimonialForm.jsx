@@ -21,10 +21,10 @@ const TestimonialForm = ({ onSubmit }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-md md:w-2/3 mx-auto ">
       <h3 className="text-xl font-bold mb-4">Share Your Experience</h3>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
           <div>
             <label className="block text-gray-700 mb-1">Name</label>
             <input
