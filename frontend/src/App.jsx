@@ -13,10 +13,14 @@ import ContactPage from "./pages/ContactPage";
 import ProductsPage from "./pages/ProductPage";
 import BuyerAuth from "./pages/BuyerAuth";
 import SellerAuth from "./pages/SellerAuth";
+import { Toaster } from 'react-hot-toast';
+import CartDrawer from './components/CartDrawer';
 
 const App = () => {
   return (
     <div>
+      <Toaster position="top-center" reverseOrder={false} />
+      <CartDrawer />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

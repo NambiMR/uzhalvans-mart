@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { FaHome, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaUser, FaBars, FaTimes, FaShoppingCart, FaHeart } from "react-icons/fa";
 import { GrLanguage } from "react-icons/gr";
 import { IoMdArrowDropdown } from "react-icons/io";
 import logo from "../assets/images/logo1.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import SearchBar from './SearchBar';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 // Reusable NavItem component
 const NavItem = ({ to, children, icon, onClick, className = "" }) => (
@@ -27,6 +29,8 @@ const NavItem = ({ to, children, icon, onClick, className = "" }) => (
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { cartCount, setIsCartOpen } = useCart();
+  const { wishlist } = useWishlist();
 
   // 1. Get user info from localStorage
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -72,31 +76,58 @@ const Navbar = () => {
 
         <SearchBar />
 
-        {/* Dynamic Login/User Dropdown */}
-        <div className="dropdown dropdown-hover dropdown-end">
-          <label tabIndex={0} className="btn btn-sm btn-ghost text-white gap-2 capitalize">
-            <FaUser className="text-xl" />
-            {userInfo ? `Hi, ${userInfo.name.split(' ')[0]}` : 'Login / Registration'}
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content z-[1] menu p-2 shadow bg-white text-black rounded-box w-60 animate-fade-in"
-          >
-            {userInfo ? (
-              <>
-                <li className="px-4 py-2 font-bold border-b border-gray-100">Role: {userInfo.role}</li>
-                {userInfo.role === 'farmer' && (
-                  <li><Link to="/seller-dashboard">My Dashboard</Link></li>
-                )}
-                <li><button onClick={handleLogout} className="text-red-600">Logout</button></li>
-              </>
-            ) : (
-              <>
-                <li><Link to="/buyer-auth">Buyer Register/Login</Link></li>
-                <li><Link to="/seller-auth">Seller Register/Login</Link></li>
-              </>
+        <div className="flex items-center gap-4">
+          {/* Wishlist Icon */}
+          <Link to="/wishlist" className="relative p-2 hover:bg-green-800 rounded-full transition-colors hidden sm:flex">
+            <FaHeart className="text-xl" />
+            {wishlist.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {wishlist.length}
+              </span>
             )}
-          </ul>
+          </Link>
+
+          {/* Cart Icon */}
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2 hover:bg-green-800 rounded-full transition-colors"
+          >
+            <FaShoppingCart className="text-xl" />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
+          {/* Dynamic Login/User Dropdown */}
+          <div className="dropdown dropdown-hover dropdown-end">
+            <label tabIndex={0} className="btn btn-sm btn-ghost text-white gap-2 capitalize">
+              <FaUser className="text-xl lg:hidden" />
+              <span className="hidden lg:inline">
+                {userInfo ? `Hi, ${userInfo.name.split(' ')[0]}` : 'Account'}
+              </span>
+            </label>
+            <ul
+              tabIndex={0}
+              className="dropdown-content z-[102] menu p-2 shadow bg-white text-black rounded-box w-52 animate-fade-in"
+            >
+              {userInfo ? (
+                <>
+                  <li className="px-4 py-2 font-bold border-b border-gray-100 text-green-700">Role: {userInfo.role}</li>
+                  {userInfo.role === 'farmer' && (
+                    <li><Link to="/seller-dashboard">My Dashboard</Link></li>
+                  )}
+                  <li><button onClick={handleLogout} className="text-red-600">Logout</button></li>
+                </>
+              ) : (
+                <>
+                  <li><Link to="/buyer-auth">Buyer Login</Link></li>
+                  <li><Link to="/seller-auth">Farmer Login</Link></li>
+                </>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
 

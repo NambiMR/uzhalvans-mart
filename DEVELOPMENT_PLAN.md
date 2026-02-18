@@ -47,13 +47,15 @@ This document tracks our collective ideas, UI/UX improvements, and technical pla
 
 ---
 
-## 🔐 Phase 2.1: Authentication (Complete ✅)
-- **Status**: Backend & Frontend fully integrated.
-- **Next**: Vertical Slice 2 - Farmer Product Management.
+## 🎨 Phase 2.2: UI/UX & Shopping Experience (Complete ✅)
+- **Status**: Global Cart, Wishlist, and Notifications implemented.
+- **Next**: Vertical Slice 2 - Farmer Product Management & API.
 - [x] **Database**: Design MongoDB schemas and connect via Atlas. (Complete ✅)
 - [x] **Authentication (Vertical Slice 1)**: Farmer & Buyer Login/Signup API + UI connection. (Complete ✅)
+- [x] **Shopping Experience**: Global Cart & Wishlist using React Context + Toasts. (Complete ✅)
 - [ ] **Farmer Dashboard (Vertical Slice 2)**: Product Upload (Cloudinary), Pricing, and Inventory. (Tomorrow's Priority)
-- [ ] **Global State**: Transition to React Context for Auth & Cart management.
+- [ ] **Mobile Optimization**: Refine NavBar and drawer for small screens. (Upcoming)
+- [ ] **Global State**: Transition to React Context for Auth & Cart management. (Complete ✅)
 - [ ] **Payment Integration (Final Phase)**: Implementing Stripe/Razorpay for a complete learning experience.
 
 ---
