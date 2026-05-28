@@ -10,7 +10,7 @@ const SellerAuth = () => {
       "Connect with local buyers",
       "Receive direct payments"
     ],
-    userType: "seller"
+    userType: "farmer"
   };
 
   return <AuthLayout {...authContent} />;

@@ -57,7 +57,7 @@ const TestimonialsPage = ({ farmerTestimonials, customerTestimonials }) => {
           </div>
         )}
       </section>
-      <section >
+      <section className='pb-6'>
         <TestimonialForm/>
       </section>
       

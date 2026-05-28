@@ -6,7 +6,7 @@ const TermsAndServices = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="bg-white py-12"
+      className="bg-gray-200 py-12"
     >
       <div className="container mx-auto px-4">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-green-800 mb-8">
