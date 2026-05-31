@@ -1,6 +1,6 @@
-// src/pages/ProductDetail.jsx
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowLeft, FiHeart, FiShare2, FiShield, FiClock, FiMapPin } from 'react-icons/fi';
 import { FaWhatsapp, FaShoppingCart } from 'react-icons/fa';
@@ -8,44 +8,46 @@ import ProductGallery from '../components/products/ProductGallery';
 import QuantitySelector from '../components/products/QuantitySelector';
 import ProductTabs from '../components/products/ProductTabs';
 import RelatedProducts from '../components/products/RelatedProducts';
-import { products } from '../data/products';
 import { toast } from 'react-hot-toast';
+
+const API_URL = 'http://localhost:5000/api/products';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Find product and memoize to avoid recalculations
-  const product = useMemo(() => products.find(p => p.id === parseInt(id)), [id]);
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h2>
-        <button onClick={() => navigate('/products')} className="btn btn-primary bg-green-600 border-none">
-          Back to Shop
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`${API_URL}/${id}`);
+        setProduct(data);
+      } catch (err) {
+        toast.error('Product not found or farm connection lost');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
   const handleAddToCart = () => {
+    if (!product) return;
     toast.success(`${product.name} added to cart!`, {
       style: {
         borderRadius: '15px',
         background: '#15803d',
         color: '#fff',
       },
-      iconTheme: {
-        primary: '#fff',
-        secondary: '#15803d',
-      },
     });
   };
 
   const shareProduct = () => {
+    if (!product) return;
     if (navigator.share) {
       navigator.share({
         title: product.name,
@@ -57,6 +59,25 @@ const ProductDetail = () => {
       toast.success("Link copied to clipboard!");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Farm Product Not Found</h2>
+        <button onClick={() => navigate('/all-products')} className="bg-green-600 text-white px-8 py-3 rounded-2xl font-bold">
+          Back to Shop
+        </button>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -201,7 +222,7 @@ const ProductDetail = () => {
 
         {/* 🔄 Related Products Section */}
         <div className="mt-24">
-          <RelatedProducts currentProductId={product.id} />
+          <RelatedProducts currentProductId={product._id} />
         </div>
       </div>
     </motion.div>

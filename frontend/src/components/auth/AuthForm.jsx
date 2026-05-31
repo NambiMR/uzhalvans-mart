@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+const API_URL = 'http://localhost:5000/api/auth';
 
 const AuthForm = ({ isLogin, userType }) => {
   const [formData, setFormData] = useState({
@@ -8,36 +12,38 @@ const AuthForm = ({ isLogin, userType }) => {
     name: '',
     phone: ''
   });
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const users = JSON.parse(localStorage.getItem(`${userType}s`)) || [];
+    setLoading(true);
 
-    if (isLogin) {
-      // Login logic
-      const user = users.find(u => u.email === formData.email && u.password === formData.password);
-      if (user) {
-        localStorage.setItem('currentUser', JSON.stringify({ ...user, type: userType }));
-        navigate(userType === 'buyer' ? '/' : '/seller-dashboard');
-      } else {
-        setError('Invalid credentials');
-      }
-    } else {
-      // Register logic
-      if (users.some(u => u.email === formData.email)) {
-        setError('Email already registered');
-        return;
-      }
-      const newUser = { ...formData, id: Date.now() };
-      localStorage.setItem(`${userType}s`, JSON.stringify([...users, newUser]));
-      localStorage.setItem('currentUser', JSON.stringify({ ...newUser, type: userType }));
-      navigate(userType === 'buyer' ? '/' : '/seller-dashboard');
+    try {
+      const endpoint = isLogin ? '/login' : '/register';
+      const payload = isLogin 
+        ? { email: formData.email, password: formData.password }
+        : { ...formData, role: userType };
+
+      const { data } = await axios.post(`${API_URL}${endpoint}`, payload);
+
+      // Save to localStorage
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      
+      toast.success(isLogin ? 'Welcome back! 🌿' : 'Welcome to Uzhavan Mart! 🌱');
+      
+      // Redirect based on role
+      const redirectPath = data.role === 'farmer' ? '/farmer' : '/';
+      navigate(redirectPath);
+
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,8 +52,6 @@ const AuthForm = ({ isLogin, userType }) => {
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
         {isLogin ? `Welcome Back` : `Join as ${userType}`}
       </h2>
-
-      {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
 
       {!isLogin && (
         <div className="mb-4">
@@ -104,9 +108,10 @@ const AuthForm = ({ isLogin, userType }) => {
 
       <button
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+        disabled={loading}
+        className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-3 px-4 rounded-lg font-medium transition-colors"
       >
-        {isLogin ? 'Login' : 'Register'}
+        {loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
       </button>
     </form>
   );

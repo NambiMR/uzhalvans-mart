@@ -1,21 +1,15 @@
 import express from 'express';
 import Product from '../models/Product.js';
 import mongoose from 'mongoose';
+import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // ---------------------------------------------------------
-// MOCK AUTH MIDDLEWARE (For Development Only)
+// FARMER DASHBOARD ROUTES (Protected)
 // ---------------------------------------------------------
-// In a real app, this would verify a JWT and set req.user
-const protectFarmer = (req, res, next) => {
-    // Injecting a fake farmer user for Vertical Slice 2 testing
-    req.user = {
-        _id: new mongoose.Types.ObjectId("60d5ecb8b392d700153ee61a"), // Dummy ID
-        role: 'farmer'
-    };
-    next();
-};
+// All routes below require login AND 'farmer' role
+const protectFarmer = [protect, authorize('farmer')];
 
 // ---------------------------------------------------------
 // FARMER DASHBOARD ROUTES (Protected)
@@ -105,6 +99,21 @@ router.delete('/:id', protectFarmer, async (req, res) => {
 // ---------------------------------------------------------
 // PUBLIC ROUTES
 // ---------------------------------------------------------
+
+// @route   GET /api/products/:id
+// @desc    Get single product details
+// @access  Public
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error fetching product details', error: error.message });
+    }
+});
 
 // @route   GET /api/products
 // @desc    Get all active products for the public shop

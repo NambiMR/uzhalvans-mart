@@ -10,8 +10,8 @@ const ProductCardSkeleton = (props) => (
     foregroundColor="#ecebeb"
     {...props}
   >
-    {/* Image Placeholder */}
-    <rect x="0" y="0" rx="8" ry="8" width="300" height="200" />
+    {/* Image Placeholder - 4:3 ratio matches the card visual */}
+    <rect x="0" y="0" rx="12" ry="12" width="300" height="225" />
     
     {/* Title Placeholder */}
     <rect x="0" y="220" rx="4" ry="4" width="200" height="24" />

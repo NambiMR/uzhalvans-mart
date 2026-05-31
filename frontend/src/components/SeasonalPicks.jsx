@@ -1,10 +1,12 @@
 // src/components/SeasonalPicks.jsx
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaLeaf, FaArrowRight } from 'react-icons/fa';
-import { products } from '../data/products';
+import axios from 'axios';
 import ProductCard from './ProductCard';
+
+const API_URL = 'http://localhost:5000/api/products';
 
 // ─── Tamil Nadu Seasonal Data ─────────────────────────────────────────────────
 // Month index (0-11): what's in season in Tamil Nadu
@@ -50,22 +52,39 @@ const SEASON_HEADER_COLORS = {
 };
 
 const SeasonalPicks = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const now = new Date();
   const month = now.getMonth();
   const { season, categories, mood, emoji } = TN_SEASONAL_MAP[month];
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(API_URL);
+        setProducts(data);
+      } catch (err) {
+        console.error('Failed to fetch seasonal products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Get products matching the season's categories
   const seasonalProducts = useMemo(() => {
     return products
       .filter(p => categories.includes(p.category))
-      .sort((a, b) => b.rating - a.rating)
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
       .slice(0, 4);
-  }, [categories]);
+  }, [products, categories]);
 
   // Fallback: If no matching products, show top-rated products 
   const displayProducts = seasonalProducts.length > 0
     ? seasonalProducts
-    : products.sort((a, b) => b.rating - a.rating).slice(0, 4);
+    : products.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
 
   const gradient = MOOD_GRADIENTS[mood] || MOOD_GRADIENTS.fresh;
   const headerColor = SEASON_HEADER_COLORS[mood] || SEASON_HEADER_COLORS.fresh;
@@ -119,21 +138,19 @@ const SeasonalPicks = () => {
 
         {/* ── Product Grid ─────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayProducts.map((product, index) => (
+          {loading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white/40 animate-pulse h-80 rounded-2xl border border-white/50" />
+            ))
+          ) : displayProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={product._id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <div className="relative">
-                {/* Freshness badge */}
-                <div className="absolute top-3 right-3 z-10 bg-green-600 text-white text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shadow">
-                  🌿 In Season
-                </div>
-                <ProductCard product={product} />
-              </div>
+              <ProductCard product={product} isSeasonal={true} />
             </motion.div>
           ))}
         </div>

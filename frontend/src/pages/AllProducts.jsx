@@ -1,10 +1,13 @@
-// src/pages/AllProducts.jsx
-import { useState, useMemo } from 'react';
-import { products } from '../data/products';
+import { useState, useMemo, useEffect } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import ProductCard from '../components/ProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiFilter, FiX, FiChevronDown } from 'react-icons/fi';
-import { FaLeaf, FaFire, FaStar } from 'react-icons/fa';
+import { FaLeaf, FaFire } from 'react-icons/fa';
+
+const API_URL = 'http://localhost:5000/api/products';
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -32,13 +35,15 @@ const SORT_OPTIONS = [
 
 const PRICE_RANGES = [
   { value: '', label: 'Any Price' },
-  { value: '0-1', label: 'Under ₹1' },
-  { value: '1-3', label: '₹1 – ₹3' },
-  { value: '3-6', label: '₹3 – ₹6' },
-  { value: '6-99', label: 'Above ₹6' },
+  { value: '0-50', label: 'Under ₹50' },
+  { value: '50-200', label: '₹50 – ₹200' },
+  { value: '200-500', label: '₹200 – ₹500' },
+  { value: '500-9999', label: 'Above ₹500' },
 ];
 
 const AllProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [priceRange, setPriceRange] = useState('');
@@ -46,13 +51,35 @@ const AllProducts = () => {
   const [onlyFresh, setOnlyFresh] = useState(false);
   const [onlyOffers, setOnlyOffers] = useState(false);
 
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(API_URL);
+        setProducts(data);
+      } catch (err) {
+        toast.error('Failed to load products from farm');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const activeFilterCount = [category, priceRange, onlyFresh, onlyOffers].filter(Boolean).length;
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
     // Category filter
-    if (category) result = result.filter(p => p.category === category);
+    if (category) {
+        if (category === 'organic') {
+            result = result.filter(p => p.isOrganic);
+        } else {
+            result = result.filter(p => p.category === category);
+        }
+    }
 
     // Price range filter
     if (priceRange) {
@@ -60,8 +87,12 @@ const AllProducts = () => {
       result = result.filter(p => p.price >= min && p.price <= max);
     }
 
-    // Fresh filter — simulating "harvested today" with high-rated products
-    if (onlyFresh) result = result.filter(p => p.rating >= 4.5);
+    // Fresh filter — using harvestDate if present
+    if (onlyFresh) {
+        const today = new Date();
+        const threeDaysAgo = new Date(today.setDate(today.getDate() - 3));
+        result = result.filter(p => p.harvestDate && new Date(p.harvestDate) >= threeDaysAgo);
+    }
 
     // Offers filter — only products with an old price
     if (onlyOffers) result = result.filter(p => p.oldPrice);
@@ -70,14 +101,14 @@ const AllProducts = () => {
     switch (sortBy) {
       case 'priceLowHigh': result.sort((a, b) => a.price - b.price); break;
       case 'priceHighLow': result.sort((a, b) => b.price - a.price); break;
-      case 'ratingHighLow': result.sort((a, b) => b.rating - a.rating); break;
-      case 'freshness': result.sort((a, b) => b.id - a.id); break; // Newest = highest ID
+      case 'ratingHighLow': result.sort((a, b) => (b.rating || 0) - (a.rating || 0)); break;
+      case 'freshness': result.sort((a, b) => new Date(b.harvestDate) - new Date(a.harvestDate)); break;
       case 'nameAZ': result.sort((a, b) => a.name.localeCompare(b.name)); break;
       default: break;
     }
 
     return result;
-  }, [category, sortBy, priceRange, onlyFresh, onlyOffers]);
+  }, [products, category, sortBy, priceRange, onlyFresh, onlyOffers]);
 
   const clearAllFilters = () => {
     setCategory('');
@@ -251,7 +282,11 @@ const AllProducts = () => {
         )}
 
         {/* ── Product Grid ─────────────────────────────────── */}
-        {filteredProducts.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <span className="text-7xl mb-6">🌾</span>
             <h3 className="text-2xl font-black text-gray-700 mb-2">No products found</h3>
@@ -265,7 +300,7 @@ const AllProducts = () => {
             <AnimatePresence>
               {filteredProducts.map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}

@@ -3,6 +3,7 @@ import { NavLink, Outlet, Link } from 'react-router-dom';
 import { FiHome, FiPackage, FiShoppingBag, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import { FaLeaf } from 'react-icons/fa';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const navItems = [
   { to: '/farmer',          icon: FiHome,        label: 'Dashboard',  end: true },
@@ -30,6 +31,12 @@ const SidebarLink = ({ to, icon: Icon, label, end = false, onClick }) => (
 
 const FarmerLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('userInfo');
+    navigate('/');
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -57,13 +64,13 @@ const FarmerLayout = () => {
         {/* Bottom Section */}
         <div className="border-t border-white/10 pt-4 mt-4 space-y-2">
           <SidebarLink to="/farmer/profile" icon={FiUser} label="Profile" />
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-all"
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-all w-full"
           >
             <FiLogOut className="text-lg" />
-            Back to Store
-          </Link>
+            Logout & Exit
+          </button>
         </div>
       </aside>
 
@@ -102,13 +109,13 @@ const FarmerLayout = () => {
               ))}
             </nav>
             <div className="border-t border-white/10 pt-4 mt-8">
-              <Link
-                to="/"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-red-300 hover:bg-red-500/10"
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm text-red-300 hover:bg-red-500/10 w-full"
               >
                 <FiLogOut className="text-lg" />
-                Back to Store
-              </Link>
+                Logout & Exit
+              </button>
             </div>
           </aside>
         </>

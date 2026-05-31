@@ -27,6 +27,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
 import productRoutes from './routes/productRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 // 4. BASIC ROUTES
 // Root route to show the server is active
@@ -39,7 +40,8 @@ app.get('/api/ping', (req, res) => {
     res.json({ message: 'Pong! Backend server is running successfully.' });
 });
 
-// Product Routes
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 
 // 5. SERVER START

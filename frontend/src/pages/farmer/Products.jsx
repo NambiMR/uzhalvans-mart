@@ -29,10 +29,24 @@ const FarmerProducts = () => {
   // ── Fetch Products ──────────────────────────────────────
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/my-products`);
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      if (!userInfo?.token) {
+        toast.error('Session expired, please login again');
+        return;
+      }
+
+      const config = {
+        headers: { Authorization: `Bearer ${userInfo.token}` }
+      };
+
+      const { data } = await axios.get(`${API_URL}/my-products`, config);
       setProducts(data);
     } catch (err) {
-      toast.error('Failed to load products');
+      if (err.response?.status === 401) {
+        toast.error('Session expired');
+      } else {
+        toast.error('Failed to load products');
+      }
     } finally {
       setLoading(false);
     }
@@ -54,6 +68,11 @@ const FarmerProducts = () => {
     e.preventDefault();
     setSubmitting(true);
 
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` }
+    };
+
     const payload = {
       ...form,
       price: Number(form.price),
@@ -64,10 +83,10 @@ const FarmerProducts = () => {
 
     try {
       if (editingId) {
-        await axios.put(`${API_URL}/${editingId}`, payload);
+        await axios.put(`${API_URL}/${editingId}`, payload, config);
         toast.success('Product updated! 🎉');
       } else {
-        await axios.post(API_URL, payload);
+        await axios.post(API_URL, payload, config);
         toast.success('Product created! 🌱');
       }
       setShowForm(false);
@@ -84,8 +103,14 @@ const FarmerProducts = () => {
   // ── Delete ──────────────────────────────────────────────
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
+    
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` }
+    };
+
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`${API_URL}/${id}`, config);
       toast.success('Product deleted');
       fetchProducts();
     } catch (err) {

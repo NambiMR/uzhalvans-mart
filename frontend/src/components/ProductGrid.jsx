@@ -3,20 +3,33 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowRight } from 'react-icons/fa';
-import { products } from '../data/products';
+import axios from 'axios';
 import ProductCard from './ProductCard';
 import ProductCardSkeleton from './ProductCardSkeleton';
 import { useFilteredSortedProducts } from '../hooks/useFilteredSortedProducts';
 
+const API_URL = 'http://localhost:5000/api/products';
+
 const ProductGrid = () => {
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [categoryFilter, setCategory] = useState('');
   const [sortOption, setSortOption] = useState('ratingHighLow');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 600);
-    return () => clearTimeout(t);
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get(API_URL);
+        setProducts(data);
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
   const filteredSortedProducts = useFilteredSortedProducts(products, categoryFilter, sortOption);
@@ -70,7 +83,7 @@ const ProductGrid = () => {
             ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
             : displayedProducts.map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}

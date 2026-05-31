@@ -26,11 +26,23 @@ const StatCard = ({ icon: Icon, label, value, accent, subtext }) => (
 const FarmerDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [farmerName, setFarmerName] = useState('Farmer');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get(`${API_URL}/my-products`);
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (userInfo) {
+          setFarmerName(userInfo.name || 'Farmer');
+        }
+
+        if (!userInfo?.token) return;
+
+        const config = {
+          headers: { Authorization: `Bearer ${userInfo.token}` }
+        };
+
+        const { data } = await axios.get(`${API_URL}/my-products`, config);
         setProducts(data);
       } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -53,7 +65,7 @@ const FarmerDashboard = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black text-gray-900">
-            Welcome back, Farmer! 🌾
+            Welcome back, {farmerName}! 🌾
           </h1>
           <p className="text-gray-400 text-sm mt-1">
             Here's what's happening with your produce today.

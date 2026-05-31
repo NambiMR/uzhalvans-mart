@@ -155,7 +155,7 @@ const Navbar = () => {
                     <li className="px-4 py-2 font-bold border-b border-gray-100 text-green-700 text-sm">{userInfo.name}</li>
                     <li className="px-4 py-1 text-xs text-gray-400 border-b border-gray-100">{userInfo.role}</li>
                     {userInfo.role === 'farmer' && (
-                      <li><Link to="/seller-dashboard">My Dashboard</Link></li>
+                      <li><Link to="/farmer">My Dashboard</Link></li>
                     )}
                     <li><button onClick={handleLogout} className="text-red-600">Logout</button></li>
                   </>
@@ -323,7 +323,7 @@ const Navbar = () => {
             {userInfo?.role === 'farmer' && (
               <li>
                 <Link
-                  to="/seller-dashboard"
+                  to="/farmer"
                   onClick={toggleMenu}
                   className="flex items-center gap-3 px-5 py-3 text-[15px] text-gray-700 hover:bg-gray-50 transition-colors"
                 >
