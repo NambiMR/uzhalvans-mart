@@ -3,27 +3,27 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { products } from '../data/products'; // Adjust path as needed
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const CategoryCarousel = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Generate category data dynamically from products
-  const categoriesMap = products.reduce((acc, product) => {
-    const cat = product.category.toLowerCase();
-    if (!acc[cat]) {
-      acc[cat] = {
-        name: cat.charAt(0).toUpperCase() + cat.slice(1),
-        img: product.images[0],
-        count: 1
-      };
-    } else {
-      acc[cat].count += 1;
-    }
-    return acc;
-  }, {});
-
-  const categories = Object.values(categoriesMap);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get('http://localhost:5000/api/categories');
+        setCategories(data);
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleCategoryClick = (categoryName) => {
     navigate(`/all-products?category=${categoryName.toLowerCase()}`);
@@ -62,7 +62,7 @@ const CategoryCarousel = () => {
               >
                 <div className="w-full aspect-square mb-3 overflow-hidden rounded-xl border border-green-50">
                   <img
-                    src={category.img}
+                    src={category.image}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
@@ -71,7 +71,7 @@ const CategoryCarousel = () => {
                 <p className="text-sm font-bold text-green-800 text-center">
                   {category.name}
                 </p>
-                <p className="text-gray-400 text-xs font-medium">{category.count} items</p>
+                {/* <p className="text-gray-400 text-xs font-medium">{category.count} items</p> */}
               </div>
             </SwiperSlide>
           ))}

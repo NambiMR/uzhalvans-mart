@@ -5,10 +5,10 @@ const BuyerAuth = () => {
     title: "Buyer Portal",
     description: "Access fresh farm products directly from local growers. Create an account to:",
     benefits: [
-      "Order farm-fresh products",
-      "Track your deliveries",
-      "Save favorite farmers",
-      "Get exclusive buyer offers"
+      "Daily Morning Harvest Delivery",
+      "100% Traceable Organic Sources",
+      "Save Your Favorite Local Farms",
+      "Exclusive Farm-to-Table Offers"
     ],
     userType: "buyer"
   };

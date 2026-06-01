@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['buyer', 'farmer'], // Only these two roles are allowed
+    enum: ['buyer', 'farmer', 'admin'], // Only these three roles are allowed
     default: 'buyer',
   },
   phone: {

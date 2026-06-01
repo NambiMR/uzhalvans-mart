@@ -8,9 +8,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api/products';
 
-const CATEGORIES = [
-  'vegetables', 'fruits', 'dairy', 'grains', 'spices', 'herbs', 'pulses', 'flowers', 'seeds', 'organic'
-];
 const UNITS = ['kg', 'bunch', 'litre', 'piece', 'box', 'gram', 'packet'];
 
 const emptyForm = {
@@ -20,14 +17,15 @@ const emptyForm = {
 
 const FarmerProducts = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['vegetables']); // Default fallback
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
 
-  // ── Fetch Products ──────────────────────────────────────
-  const fetchProducts = async () => {
+  // ── Fetch Data ──────────────────────────────────────
+  const fetchData = async () => {
     try {
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       if (!userInfo?.token) {
@@ -39,20 +37,23 @@ const FarmerProducts = () => {
         headers: { Authorization: `Bearer ${userInfo.token}` }
       };
 
-      const { data } = await axios.get(`${API_URL}/my-products`, config);
-      setProducts(data);
-    } catch (err) {
-      if (err.response?.status === 401) {
-        toast.error('Session expired');
-      } else {
-        toast.error('Failed to load products');
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get(`${API_URL}/my-products`, config),
+        axios.get('http://localhost:5000/api/categories')
+      ]);
+
+      setProducts(productsRes.data);
+      if (categoriesRes.data.length > 0) {
+        setCategories(categoriesRes.data.map(c => c.name.toLowerCase()));
       }
+    } catch (err) {
+      toast.error('Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { fetchData(); }, []);
 
   // ── Handle Input Change ─────────────────────────────────
   const handleChange = (e) => {
@@ -92,7 +93,7 @@ const FarmerProducts = () => {
       setShowForm(false);
       setEditingId(null);
       setForm(emptyForm);
-      fetchProducts();
+      fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Something went wrong');
     } finally {
@@ -112,7 +113,7 @@ const FarmerProducts = () => {
     try {
       await axios.delete(`${API_URL}/${id}`, config);
       toast.success('Product deleted');
-      fetchProducts();
+      fetchData();
     } catch (err) {
       toast.error('Failed to delete');
     }
@@ -187,7 +188,7 @@ const FarmerProducts = () => {
                 <div>
                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Product Name *</label>
                   <input name="name" value={form.name} onChange={handleChange} required placeholder="e.g., Fresh Tomatoes"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400" />
                 </div>
 
                 {/* Category */}
@@ -251,14 +252,14 @@ const FarmerProducts = () => {
                 <div className="md:col-span-2">
                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Image URLs <span className="text-gray-300">comma separated</span></label>
                   <input name="images" value={form.images} onChange={handleChange} placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 placeholder:text-gray-400" />
                 </div>
 
                 {/* Description */}
                 <div className="md:col-span-2">
                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Description *</label>
-                  <textarea name="description" value={form.description} onChange={handleChange} required rows="3" placeholder="Describe your produce, farming practices, and quality..."
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none" />
+                  <textarea name="description" value={form.description} onChange={handleChange} required rows="4" placeholder="Describe the freshness, farm location, or any specialized growing tech..."
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none placeholder:text-gray-400" />
                 </div>
 
                 {/* Organic Toggle */}

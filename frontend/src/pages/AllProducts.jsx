@@ -10,20 +10,6 @@ import { FaLeaf, FaFire } from 'react-icons/fa';
 const API_URL = 'http://localhost:5000/api/products';
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
-const CATEGORIES = [
-  { value: '', label: 'All', emoji: '🌾' },
-  { value: 'vegetables', label: 'Vegetables', emoji: '🥦' },
-  { value: 'fruits', label: 'Fruits', emoji: '🍎' },
-  { value: 'grains', label: 'Grains', emoji: '🌾' },
-  { value: 'dairy', label: 'Dairy', emoji: '🥛' },
-  { value: 'spices', label: 'Spices', emoji: '🌶️' },
-  { value: 'herbs', label: 'Herbs', emoji: '🌿' },
-  { value: 'pulses', label: 'Pulses', emoji: '🫘' },
-  { value: 'flowers', label: 'Flowers', emoji: '🌸' },
-  { value: 'seeds', label: 'Seeds', emoji: '🌱' },
-  { value: 'organic', label: 'Organic', emoji: '✅' },
-];
-
 const SORT_OPTIONS = [
   { value: '', label: 'Default' },
   { value: 'priceLowHigh', label: 'Price: Low → High' },
@@ -43,6 +29,7 @@ const PRICE_RANGES = [
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([{ value: '', label: 'All', emoji: '🌾' }]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -51,20 +38,37 @@ const AllProducts = () => {
   const [onlyFresh, setOnlyFresh] = useState(false);
   const [onlyOffers, setOnlyOffers] = useState(false);
 
-  // Fetch products from backend
+  // Fetch products and categories from backend
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(API_URL);
-        setProducts(data);
+        const [productsRes, categoriesRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/products'),
+          axios.get('http://localhost:5000/api/categories')
+        ]);
+        
+        setProducts(productsRes.data);
+        
+        const dynamicCategories = categoriesRes.data.map(cat => ({
+          value: cat.name.toLowerCase(),
+          label: cat.name,
+          emoji: '📦' // Default emoji for dynamic categories
+        }));
+        
+        setCategories([
+          { value: '', label: 'All', emoji: '🌾' },
+          ...dynamicCategories,
+          { value: 'organic', label: 'Organic', emoji: '✅' }
+        ]);
+
       } catch (err) {
-        toast.error('Failed to load products from farm');
+        toast.error('Failed to load data from farm');
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
   const activeFilterCount = [category, priceRange, onlyFresh, onlyOffers].filter(Boolean).length;

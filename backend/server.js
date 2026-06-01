@@ -28,6 +28,9 @@ mongoose.connect(process.env.MONGODB_URI)
 
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // 4. BASIC ROUTES
 // Root route to show the server is active
@@ -43,6 +46,9 @@ app.get('/api/ping', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/users', userRoutes);
 
 // 5. SERVER START
 app.listen(PORT, () => {

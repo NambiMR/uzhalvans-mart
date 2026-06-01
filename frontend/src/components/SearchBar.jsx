@@ -32,7 +32,7 @@ const SearchBar = ({ className = "" }) => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search fresh products..."
-        className="input input-sm lg:input-md w-full sm:rounded-none rounded-l-lg border-x-0 bg-white text-black focus:outline-none text-sm"
+        className="input input-sm lg:input-md w-full sm:rounded-none rounded-l-lg border-x-0 bg-white text-black focus:outline-none text-sm placeholder:text-gray-500"
       />
       <button 
         type="submit"

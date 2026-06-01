@@ -5,10 +5,10 @@ const SellerAuth = () => {
     title: "Farmer Portal",
     description: "Sell your farm products directly to consumers. Register to:",
     benefits: [
-      "List your products easily",
-      "Manage orders and inventory",
-      "Connect with local buyers",
-      "Receive direct payments"
+      "Direct Farm-to-Consumer Market",
+      "Real-time Inventory Management",
+      "Transparent Pricing & Analytics",
+      "Instant Direct Bank Transfers"
     ],
     userType: "farmer"
   };

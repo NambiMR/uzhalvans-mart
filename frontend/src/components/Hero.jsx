@@ -2,13 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import axios from 'axios';
 import './Hero.css';
-import hero1 from '../assets/images/hero-1.jpg';
-import hero3 from '../assets/images/spices.jpeg';
-import organicImage from '../assets/images/organic.jpg';
 
 // Typing effect component for the rotating phrases
 const TypingText = ({ text }) => {
@@ -23,24 +18,8 @@ const TypingText = ({ text }) => {
   };
 
   const child = {
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100,
-      },
-    },
-    hidden: {
-      opacity: 0,
-      x: 20,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100,
-      },
-    },
+    visible: { opacity: 1, x: 0, transition: { type: "spring", damping: 12, stiffness: 100 } },
+    hidden: { opacity: 0, x: 20, transition: { type: "spring", damping: 12, stiffness: 100 } },
   };
 
   return (
@@ -61,64 +40,54 @@ const TypingText = ({ text }) => {
 };
 
 const Hero = () => {
-  const phrases = ["Organic Vegetables", "Fresh Fruits", "Local Grains", "Farm Fresh Eggs"];
+  const [phrases] = useState(["Organic Vegetables", "Fresh Fruits", "Local Grains", "Farm Fresh Eggs"]);
   const [currentPhrase, setCurrentPhrase] = useState(0);
+  const [heroContent, setHeroContent] = useState({
+    title: 'Farm-Fresh Goodness',
+    subtitle: 'Delivered!',
+    backgroundImage: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80',
+    ctaText: 'Shop Now'
+  });
   const heroRef = useRef(null);
 
   // Parallax Scroll logic
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]); // For background
-  const y2 = useTransform(scrollY, [0, 500], [0, -100]); // For content (slight upward move)
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    arrows: false,
-    fade: true,
-    pauseOnHover: false,
-  };
-
-  const heroImages = [
-    { id: 1, image: hero1, alt: 'Fresh vegetables from local farms' },
-    { id: 2, image: hero3, alt: 'Organic fruits and produce' },
-    { id: 3, image: organicImage, alt: 'Farm fresh organic products' }
-  ];
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]); 
+  const y2 = useTransform(scrollY, [0, 500], [0, -100]);
 
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await axios.get('http://localhost:5000/api/settings');
+        if (data.hero) {
+          setHeroContent(data.hero);
+        }
+      } catch (err) {
+        console.error('Failed to fetch settings:', err);
+      }
+    };
+    fetchSettings();
+
     const interval = setInterval(() => {
       setCurrentPhrase((prev) => (prev + 1) % phrases.length);
-    }, 4000); // Slightly longer for typing effect
+    }, 4000);
     return () => clearInterval(interval);
   }, [phrases.length]);
 
   return (
     <section ref={heroRef} className="relative h-[calc(100dvh-48px)] lg:h-[calc(100dvh-120px)] overflow-hidden">
-      {/* Image Slider with Parallax */}
+      {/* Dynamic Background Image */}
       <motion.div style={{ y: y1 }} className="absolute inset-0 z-0 scale-110">
-        <Slider {...settings}>
-          {heroImages.map((item) => (
-            <div key={item.id}>
-              <div
-                className="w-full h-screen bg-cover bg-center"
-                style={{ backgroundImage: `url(${item.image})` }}
-                aria-label={item.alt}
-              />
-            </div>
-          ))}
-        </Slider>
-        {/* Dark overlay for text readability */}
+          <div
+            className="w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroContent.backgroundImage})` }}
+          />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20"></div>
       </motion.div>
 
       {/* Content */}
       <div className="container mx-auto px-6 relative z-10 h-full flex flex-col justify-center">
         <motion.div style={{ y: y2 }} className="text-center md:text-left max-w-2xl">
-          {/* Typing Effect Text */}
           <AnimatePresence mode="wait">
             <TypingText key={currentPhrase} text={phrases[currentPhrase]} />
           </AnimatePresence>
@@ -129,9 +98,9 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl"
           >
-            Farm-Fresh Goodness
+            {heroContent.title.split(' ').slice(0, -1).join(' ')}
             <br />
-            <span className="text-green-400">Delivered!</span>
+            <span className="text-green-400">{heroContent.title.split(' ').slice(-1)}</span>
           </motion.h1>
 
           <motion.p
@@ -140,18 +109,16 @@ const Hero = () => {
             transition={{ delay: 0.5, duration: 1 }}
             className="text-lg md:text-xl text-gray-100 mb-10 max-w-lg drop-shadow-md leading-relaxed"
           >
-            Buy directly from local farmers. 100% organic, 100% fresh.
-            Empowering our agricultural community.
+            {heroContent.subtitle}
           </motion.p>
 
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-5">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/products"
                 className="bg-green-600 hover:bg-green-700 text-white px-12 py-4 rounded-full font-bold text-lg text-center transition-all shadow-xl shadow-green-900/40 inline-block w-full sm:w-auto"
               >
-                Shop Now
+                {heroContent.ctaText}
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -163,16 +130,6 @@ const Hero = () => {
               </Link>
             </motion.div>
           </div>
-
-          {/* Seasonal Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, type: "spring" }}
-            className="mt-12 inline-flex items-center gap-2 bg-yellow-400 bg-opacity-95 text-yellow-900 px-6 py-3 rounded-full font-bold text-sm shadow-2xl animate-bounce"
-          >
-            <span>🌾</span> Summer Special: 20% Off All Grains!
-          </motion.div>
         </motion.div>
       </div>
 

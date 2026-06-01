@@ -68,11 +68,9 @@ const Navbar = () => {
   // Navigation items config
   const navItems = [
     { to: "/", label: "Home", icon: <FaHome /> },
-    { to: "/seller-auth", label: "Sell", icon: <FaSeedling /> },
-    { to: "/buyer-auth", label: "Buy", icon: <FaStore /> },
+    { to: "/all-products", label: "Shop", icon: <FaStore /> },
     { to: "/about", label: "About Us", icon: <FaInfoCircle /> },
-    { to: "/terms", label: "Terms & Service", icon: <FaFileContract /> },
-    { to: "/testimonials", label: "Testimonial", icon: <FaComments /> },
+    { to: "/terms", label: "Terms", icon: <FaFileContract /> },
     { to: "/contact", label: "Contact", icon: <FaEnvelope /> }
   ];
 
@@ -157,12 +155,15 @@ const Navbar = () => {
                     {userInfo.role === 'farmer' && (
                       <li><Link to="/farmer">My Dashboard</Link></li>
                     )}
+                    {userInfo.role === 'admin' && (
+                      <li><Link to="/admin">Admin Control Center</Link></li>
+                    )}
                     <li><button onClick={handleLogout} className="text-red-600">Logout</button></li>
                   </>
                 ) : (
                   <>
-                    <li><Link to="/buyer-auth">Buyer Login</Link></li>
-                    <li><Link to="/seller-auth">Farmer Login</Link></li>
+                    <li><Link to="/auth" className="font-bold text-green-700">Sign In / Register</Link></li>
+                    <li className="px-4 py-2 text-[10px] text-gray-400">Join as a Farmer or Buyer</li>
                   </>
                 )}
               </ul>
@@ -251,20 +252,13 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               <Link 
-                to="/buyer-auth" 
+                to="/auth" 
                 onClick={toggleMenu}
-                className="flex-1 bg-white text-green-700 text-center py-2 rounded-lg text-sm font-bold hover:bg-green-50 transition-colors"
+                className="w-full bg-white text-green-700 text-center py-3 rounded-xl text-sm font-black hover:bg-green-50 transition-all border border-green-100"
               >
-                Login
-              </Link>
-              <Link 
-                to="/buyer-auth" 
-                onClick={toggleMenu}
-                className="flex-1 bg-green-500 text-white text-center py-2 rounded-lg text-sm font-bold hover:bg-green-600 transition-colors"
-              >
-                Register
+                Sign In / Join Us
               </Link>
             </div>
           )}
@@ -332,6 +326,19 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+
+            {userInfo?.role === 'admin' && (
+              <li>
+                <Link
+                  to="/admin"
+                  onClick={toggleMenu}
+                  className="flex items-center gap-3 px-5 py-3 text-[15px] text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-lg w-6 text-center"><FaTachometerAlt className="text-indigo-500" /></span>
+                  Admin Control Center
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -391,11 +398,11 @@ const Navbar = () => {
           </NavLink>
 
           <NavLink 
-            to={userInfo ? "/profile" : "/buyer-auth"} 
+            to={userInfo ? "/profile" : "/auth"} 
             className={({ isActive }) => `flex flex-col items-center gap-0.5 text-[10px] font-medium transition-colors ${isActive ? 'text-green-600' : 'text-gray-500'}`}
           >
             <FaUser size={20} />
-            <span>{userInfo ? 'Account' : 'Login'}</span>
+            <span>{userInfo ? 'Account' : 'Join'}</span>
           </NavLink>
         </div>
       </div>
